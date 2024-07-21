@@ -11,6 +11,8 @@ import {
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
+const DEFAULT_CAMERA_POSITION: THREE.Vector3 = new THREE.Vector3(0, 10, 10);
+
 export type SceneContextValue = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
@@ -31,8 +33,11 @@ export const Scene = ({
 }: {
   children?: ReactNode;
 }): JSX.Element | null => {
+  // canvasのRef
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  // scene
   const { current: scene } = useRef<THREE.Scene>(new THREE.Scene());
+  // camera
   const { current: camera } = useRef<THREE.PerspectiveCamera>(
     new THREE.PerspectiveCamera(
       75,
@@ -41,14 +46,18 @@ export const Scene = ({
       1000
     )
   );
+  // renderer
   const [renderer, setRenderer] = useState<THREE.Renderer>();
+  // OrbitControls
   const [control, setControl] = useState<OrbitControls>();
+  // ライト
   const [light] = useState(() => {
     const light = new THREE.AmbientLight(0xffaaff);
     light.position.set(10, 10, 10);
     return light;
   });
 
+  /** リサイズハンドラ */
   const handleResize = useCallback(() => {
     if (!renderer || !camera) {
       return;
@@ -58,29 +67,40 @@ export const Scene = ({
     camera.updateProjectionMatrix();
   }, [camera, renderer]);
 
-  // setup
+  // 初期化
   useEffect(() => {
     if (!canvasRef.current) return;
+    // レンダラー作成
     const renderer = new THREE.WebGLRenderer({
       canvas: canvasRef.current,
       antialias: true,
       alpha: true,
       depth: true,
     });
-    camera.position.set(0, 10, 10);
+    // 背景色
+    renderer.setClearColor(0xeeeeee);
+    // レンダラーのアニメーション(FPSは環境依存)
     renderer.setAnimationLoop(() => {
       renderer.render(scene, camera);
     });
-    renderer.setClearColor(0xeeeeee);
+    // cameraのpositionセット
+    camera.position.set(
+      DEFAULT_CAMERA_POSITION.x,
+      DEFAULT_CAMERA_POSITION.y,
+      DEFAULT_CAMERA_POSITION.z
+    );
+    // 画面のコントロール作成
     const control = new OrbitControls(camera, renderer.domElement);
-    control.update();
+    // ライト追加
     scene.add(light);
     setRenderer(renderer);
     setControl(control);
   }, [camera, canvasRef, light, scene]);
 
+  // リサイズイベント
   useEffect(handleResize, [handleResize]);
 
+  /** コンテキスト */
   const sceneContext = useMemo<SceneContextValue | null>(() => {
     if (!renderer || !control) return null;
     return {

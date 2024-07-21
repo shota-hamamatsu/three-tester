@@ -3,7 +3,7 @@ import { Scene } from "../context/Scene";
 import { Mesh } from "../Mesh";
 
 const meta = {
-  title: "Example/Scene",
+  title: "Scene",
   component: Scene,
 } satisfies Meta<typeof Scene>;
 export default meta;
