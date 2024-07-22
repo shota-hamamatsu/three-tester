@@ -14,8 +14,8 @@ type Story = StoryObj<typeof HeatmapPlane>;
 export const Test: Story = {
   render: () => {
     const data: HeatmapData = [];
-    for (let i = 0; i < 50; i++) {
-      data.push([Math.random() * 20, Math.random() * 30, Math.random() * 2000]);
+    for (let i = 0; i < 3; i++) {
+      data.push([Math.random() * 20, Math.random() * 30, Math.random() * 1500]);
     }
     return (
       <Scene>

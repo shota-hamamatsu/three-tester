@@ -55,7 +55,7 @@ export const HeatmapPlane = ({
   const handleUpdate = useCallback(() => {
     heatmap.setData(data);
     heatmap.draw(0);
-    mesh.scale.set(bounds.width, 1, bounds.height);
+    mesh.scale.set(bounds.width, bounds.height, 1);
     mesh.material.needsUpdate = true;
   }, [bounds.height, bounds.width, data, heatmap, mesh.material, mesh.scale]);
 
